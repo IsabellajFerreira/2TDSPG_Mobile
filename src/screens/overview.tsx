@@ -1,25 +1,92 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { StyleSheet, Text, TextInput, Touchable, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { RootStackParamList } from '../navigation';
 
 type OverviewScreenNavigationProps = StackNavigationProp<RootStackParamList, 'Overview'>;
 
 export default function Overview() {
-  const navigation = useNavigation<OverviewScreenNavigationProps>();
+  const navigation = useNavigation();
+  const router = useRoute();
+
+  // ESTADO: tudo que pode vir a mudar na tela
+
+  // FUNÇÕES: tudo que pode ser executado na tela
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    // CHAMA A API
+    // SE DER CERTO, VAI PRA TELA DE DASHBOARD
+
+    // fetch('https://api.example.com/login', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ email, password }),
+    // })
+    //   .then((response) => {
+    //     if (response.ok) {
+    //       navigation.navigate('details');
+    //     } else {
+    //       alert('Email ou senha inválidos');
+    //     }
+    //   })
+    //   .catch(() => {
+    //     alert('Erro ao fazer login');
+    //   });
+
+    navigation.replace('Details', { email, info: 'info hello' });
+  };
+
+  const validateEmail = (str: string) => {
+    // validando se o email é válido
+    const regex =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regex.test(str);
+  };
+
+  const validatePassword = (str: string) => {
+    // validando se a senha é válida
+    return str.length > 5;
+  };
+
+  const isButtonDisabled = () => {
+    // true e true = true
+    // true e false = false
+    // false e true = false
+    // false e false = false
+    return !validateEmail(email) || !validatePassword(password);
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Log in</Text>
-      <TextInput placeholder="Your email" style={styles.input} />
-      <TextInput placeholder="Password" style={styles.input} />
+
+      <TextInput
+        placeholder="Your email"
+        style={styles.input}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+      />
+
+      <TextInput
+        placeholder="Password"
+        style={styles.input}
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        secureTextEntry
+      />
+
       <TouchableOpacity
-        onPress={() => alert('indo pra tela de dashboard')}
-        style={styles.loginButton}>
+        onPress={handleLogin}
+        style={styles.loginButton}
+        disabled={isButtonDisabled()}>
         <Text style={styles.loginButtonText}>Log in</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => alert('hello')}>
+
+      <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.forgotText}>Forgot password</Text>
       </TouchableOpacity>
 
@@ -41,13 +108,7 @@ export default function Overview() {
           style={styles.facebookButton}>
           <Text style={styles.loginButtonText}>Facebook</Text>
         </TouchableOpacity>
-
-		
       </View>
-	  <TouchableOpacity onPress={() => alert('hello')}>
-	  <Text style={styles.forgotTextSimples}>Don’t have an account? <Text style={styles.forgotText}>Sign Up</Text></Text>
-        
-      </TouchableOpacity>
     </View>
   );
 }
@@ -82,7 +143,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 16,
   },
   forgotText: {
     color: 'blue',
@@ -90,12 +150,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     marginVertical: 10,
     fontWeight: 'bold',
-  },
-  forgotTextSimples:{
-	color: 'black',
-    marginBottom: 10,
-    textAlign: 'right',
-    marginVertical: 10,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -114,18 +168,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    marginBottom: 24,
   },
   googleButton: {
     color: 'white',
     fontWeight: 'bold',
+    backgroundColor: 'red',
     padding: 10,
     borderRadius: 5,
     width: '47%',
-	backgroundColor: '#4285F4',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 16,
   },
   facebookButton: {
     color: 'white',
